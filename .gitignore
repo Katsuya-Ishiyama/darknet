@@ -34,3 +34,6 @@ GTAGS
 
 # Training Data
 VOC*
+
+# Weights
+darknet53.conv.74
