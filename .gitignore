@@ -31,3 +31,6 @@ HTML/
 GPATH
 GRTAGS
 GTAGS
+
+# Training Data
+VOC*
