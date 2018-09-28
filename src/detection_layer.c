@@ -82,6 +82,7 @@ void forward_detection_layer(const detection_layer l, network net)
                 for (j = 0; j < l.n; ++j) {
                     int p_index = index + locations*l.classes + i*l.n + j;
                     l.delta[p_index] = l.noobject_scale*(0 - l.output[p_index]);
+                    // Calculating the 4th term of the loss function(Eq.3).
                     *(l.cost) += l.noobject_scale*pow(l.output[p_index], 2);
                     avg_anyobj += l.output[p_index];
                 }
@@ -90,6 +91,7 @@ void forward_detection_layer(const detection_layer l, network net)
                 float best_iou = 0;
                 float best_rmse = 20;
 
+                // Note that only the above term is calculated when bounding box contain no object.
                 if (!is_obj){
                     continue;
                 }
@@ -97,6 +99,7 @@ void forward_detection_layer(const detection_layer l, network net)
                 int class_index = index + i*l.classes;
                 for(j = 0; j < l.classes; ++j) {
                     l.delta[class_index+j] = l.class_scale * (net.truth[truth_index+1+j] - l.output[class_index+j]);
+                    // Calculating the 5th term of the loss function(Eq.3).
                     *(l.cost) += l.class_scale * pow(net.truth[truth_index+1+j] - l.output[class_index+j], 2);
                     if(net.truth[truth_index + 1 + j]) avg_cat += l.output[class_index+j];
                     avg_allcat += l.output[class_index+j];
@@ -157,8 +160,12 @@ void forward_detection_layer(const detection_layer l, network net)
                 float iou  = box_iou(out, truth);
 
                 //printf("%d,", best_index);
+
                 int p_index = index + locations*l.classes + i*l.n + best_index;
+                // Subtracting the 3rd term from the loss function because it is already added.
+                // This is for efficiency, I think...
                 *(l.cost) -= l.noobject_scale * pow(l.output[p_index], 2);
+                // Calculating the 3rd term of the loss function(Eq.3).
                 *(l.cost) += l.object_scale * pow(1-l.output[p_index], 2);
                 avg_obj += l.output[p_index];
                 l.delta[p_index] = l.object_scale * (1.-l.output[p_index]);
