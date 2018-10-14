@@ -136,6 +136,7 @@ void forward_detection_layer(const detection_layer l, network net)
                     }
                 }
 
+                // This part is not executed since l.forced = 0.
                 if(l.forced){
                     if(truth.w*truth.h < .1){
                         best_index = 1;
@@ -143,6 +144,7 @@ void forward_detection_layer(const detection_layer l, network net)
                         best_index = 0;
                     }
                 }
+                // This part is not executed since l.random = 0.
                 if(l.random && *(net.seen) < 64000){
                     best_index = rand()%l.n;
                 }
@@ -170,6 +172,7 @@ void forward_detection_layer(const detection_layer l, network net)
                 avg_obj += l.output[p_index];
                 l.delta[p_index] = l.object_scale * (1.-l.output[p_index]);
 
+                // This part is executed since l.rescore = 1.
                 if(l.rescore){
                     l.delta[p_index] = l.object_scale * (iou - l.output[p_index]);
                 }
