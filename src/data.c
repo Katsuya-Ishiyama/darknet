@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "image.h"
 #include "cuda.h"
+#include "myutil.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -455,10 +456,17 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
     find_replace(labelpath, ".png", ".txt", labelpath);
     find_replace(labelpath, ".JPG", ".txt", labelpath);
     find_replace(labelpath, ".JPEG", ".txt", labelpath);
+
+    // Katsuya-Ishiyama added to show paths of an image and a labels.
+    printf("Image: %s\n", path);
+    printf("Labels: %s\n", labelpath);
+
     int count = 0;
     box_label *boxes = read_boxes(labelpath, &count);
     randomize_boxes(boxes, count);
+    print_box_label(&boxes[0]);     // Katsuya-Ishiyama added to understand box data.
     correct_boxes(boxes, count, dx, dy, sx, sy, flip);
+    print_box_label(&boxes[0]);     // Katsuya-Ishiyama added to understand box data.
     if(count > num_boxes) count = num_boxes;
     float x,y,w,h;
     int id;

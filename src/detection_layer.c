@@ -5,6 +5,7 @@
 #include "box.h"
 #include "cuda.h"
 #include "utils.h"
+#include "myutil.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -78,6 +79,10 @@ void forward_detection_layer(const detection_layer l, network net)
             int index = b*l.inputs;
             for (i = 0; i < locations; ++i) {
                 int truth_index = (b*locations + i)*(1+l.coords+l.classes);
+
+                // Katsuya-Ishiyama added this to understand the 'net.truth'.
+                print_float_array(net.truth);
+
                 int is_obj = net.truth[truth_index];
                 for (j = 0; j < l.n; ++j) {
                     int p_index = index + locations*l.classes + i*l.n + j;
